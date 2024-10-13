@@ -52,6 +52,7 @@ if (builder.Configuration.GetValue<string>("DAPR_CLI_PATH") is { } daprCliPath)
 
 builder.Build().Run();
 
+// Workaround for https://github.com/dotnet/aspire/issues/5089#issuecomment-2258058030
 public static class DaprSidecarResourceBuilderExtensions
 {
     private const string ConnectionStringEnvironmentName = "ConnectionStrings__";
