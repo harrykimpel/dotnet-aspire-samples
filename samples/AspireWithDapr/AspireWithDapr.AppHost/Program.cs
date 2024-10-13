@@ -20,6 +20,7 @@ string OTEL_EXPORTER_OTLP_HEADERS = "api-key=" + NEW_RELIC_LICENSE_KEY;
 builder.AddProject<Projects.AspireWithDapr_ApiService>("api")
     .WithDaprSidecar(options =>
     {
+        // Workaround for https://github.com/dotnet/aspire/issues/5089#issuecomment-2258058030
         options.WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT);
         options.WithEnvironment("OTEL_EXPORTER_OTLP_HEADERS", OTEL_EXPORTER_OTLP_HEADERS);
         //options.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
@@ -32,6 +33,7 @@ builder.AddProject<Projects.AspireWithDapr_ApiService>("api")
 builder.AddProject<Projects.AspireWithDapr_Web>("web")
     .WithDaprSidecar(options =>
     {
+        // Workaround for https://github.com/dotnet/aspire/issues/5089#issuecomment-2258058030
         options.WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT);
         options.WithEnvironment("OTEL_EXPORTER_OTLP_HEADERS", OTEL_EXPORTER_OTLP_HEADERS);
         //options.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
