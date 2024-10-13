@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
@@ -18,7 +20,9 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    app.Logger.LogInformation("Receiving request for weather forecast.");
+    int maxRange = 5;
+    var forecast = Enumerable.Range(1, maxRange).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
@@ -26,6 +30,23 @@ app.MapGet("/weatherforecast", () =>
             summaries[Random.Shared.Next(summaries.Length)]
         ))
         .ToArray();
+
+    var activity = Activity.Current;
+    activity?.SetTag("amountWeatherForecasts", forecast.Length);
+
+    int totalTempC = 0;
+    int totalTempF = 0;
+    foreach (WeatherForecast fc in forecast)
+    {
+        totalTempC += fc.TemperatureC;
+        totalTempF += fc.TemperatureF;
+    }
+    float avgTempC = (float)totalTempC / (float)maxRange;
+    float avgTempF = (float)totalTempF / (float)maxRange;
+    activity?.SetTag("avgTemperatureC", avgTempC);
+    activity?.SetTag("avgTemperatureF", avgTempF);
+    app.Logger.LogInformation($"The average temperature in the next {maxRange} days is {avgTempC} C or {avgTempF} F.");
+
     return forecast;
 });
 

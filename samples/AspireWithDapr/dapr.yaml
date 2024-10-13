@@ -1,0 +1,9 @@
+version: 1
+apps:
+  - appDirPath: ./AspireWithDapr.ApiService/
+    appID: api
+    appPort: 5365
+    command: ["dotnet", "run"]
+  - appDirPath: ./AspireWithDapr.Web/
+    appID: web
+    command: ["dotnet", "run"]

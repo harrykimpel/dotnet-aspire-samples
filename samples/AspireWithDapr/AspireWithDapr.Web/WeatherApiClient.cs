@@ -6,6 +6,7 @@ public class WeatherApiClient(DaprClient daprClient)
 {
     public async Task<WeatherForecast[]> GetWeatherAsync()
     {
+        Console.WriteLine("Making request to weather API ...");
         return await daprClient.InvokeMethodAsync<WeatherForecast[]>(HttpMethod.Get, "api", "weatherforecast");
     }
 }
