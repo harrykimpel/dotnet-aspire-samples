@@ -1,0 +1,34 @@
+﻿@page "/order"
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+@inject WeatherApiClient WeatherApi
+
+<PageTitle>Order</PageTitle>
+
+<h1>Order</h1>
+
+<p>This component demonstrates publishing data sent to pub-sub.</p>
+
+@if (orderSubmittResult == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    string result = orderSubmittResult.Value ? "successfully" : "with failure";
+    <div>Order Id @randomOrderId is submitted @result</div>
+}
+
+@code {
+    private bool? orderSubmittResult;
+    private int randomOrderId = -1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Random random = new Random();
+        randomOrderId = random.Next(1, 101); // Generates a random number between 1 and 100
+
+        orderSubmittResult = await WeatherApi.SubmitOrderAsync(randomOrderId);
+    }
+}

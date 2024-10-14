@@ -17,6 +17,8 @@ var NEW_RELIC_LICENSE_KEY = Environment.GetEnvironmentVariable("NEW_RELIC_LICENS
 string OTEL_EXPORTER_OTLP_HEADERS = "api-key=" + NEW_RELIC_LICENSE_KEY;
 //string OTEL_EXPORTER_OTLP_PROTOCOL = "http/protobuf";
 
+var pubsub = builder.AddDaprPubSub("orderpubsub");
+
 builder.AddProject<Projects.AspireWithDapr_ApiService>("api")
     .WithDaprSidecar(options =>
     {
@@ -26,7 +28,8 @@ builder.AddProject<Projects.AspireWithDapr_ApiService>("api")
         //options.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
     })
     .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
-    .WithEnvironment("OTEL_EXPORTER_OTLP_HEADERS", OTEL_EXPORTER_OTLP_HEADERS);
+    .WithEnvironment("OTEL_EXPORTER_OTLP_HEADERS", OTEL_EXPORTER_OTLP_HEADERS)
+    .WithReference(pubsub);
 //.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL)
 //.WithEnvironment("OTEL_SERVICE_NAME", "apiservice");
 
@@ -39,7 +42,8 @@ builder.AddProject<Projects.AspireWithDapr_Web>("web")
         //options.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL);
     })
     .WithEnvironment("OTEL_EXPORTER_OTLP_ENDPOINT", OTEL_EXPORTER_OTLP_ENDPOINT)
-    .WithEnvironment("OTEL_EXPORTER_OTLP_HEADERS", OTEL_EXPORTER_OTLP_HEADERS);
+    .WithEnvironment("OTEL_EXPORTER_OTLP_HEADERS", OTEL_EXPORTER_OTLP_HEADERS)
+    .WithReference(pubsub);
 //.WithEnvironment("OTEL_EXPORTER_OTLP_PROTOCOL", OTEL_EXPORTER_OTLP_PROTOCOL)
 //.WithEnvironment("OTEL_SERVICE_NAME", "webfrontend");
 

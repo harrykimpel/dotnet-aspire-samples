@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,28 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 });
 
+//string baseURL = (Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost") + ":" + (Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500"); //reconfigure cpde to make requests to Dapr sidecar
+const string PUBSUBNAME = "orderpubsub";
+const string TOPIC = "orders";
+
+// Register Dapr pub/sub subscriptions
+app.MapGet("/dapr/subscribe", () =>
+{
+    var sub = new DaprSubscription(PubsubName: PUBSUBNAME, Topic: TOPIC, Route: TOPIC);
+    Console.WriteLine("Dapr pub/sub is subscribed to: " + sub);
+    return Results.Json(new DaprSubscription[] { sub });
+});
+
+// Dapr subscription in /dapr/subscribe sets up this route
+app.MapPost("/orders", (DaprData<Order> requestData) =>
+{
+    Console.WriteLine("Subscriber received Order Id: " + requestData.Data.OrderId);
+    app.Logger.LogInformation($"Subscriber received Order Id: {requestData.Data.OrderId}");
+    var activity = Activity.Current;
+    activity?.SetTag("orderId", requestData.Data.OrderId);
+    return Results.Ok(requestData.Data);
+});
+
 app.MapDefaultEndpoints();
 
 app.Run();
@@ -58,3 +81,10 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+public record DaprData<T>([property: JsonPropertyName("data")] T Data);
+public record Order([property: JsonPropertyName("orderId")] int OrderId);
+public record DaprSubscription(
+  [property: JsonPropertyName("pubsubname")] string PubsubName,
+  [property: JsonPropertyName("topic")] string Topic,
+  [property: JsonPropertyName("route")] string Route);

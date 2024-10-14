@@ -1,4 +1,6 @@
 version: 1
+common: # optional section for variables shared across apps
+  resourcesPath: ./components # any dapr resources to be shared across apps
 apps:
   - appDirPath: ./AspireWithDapr.ApiService/
     appID: api
