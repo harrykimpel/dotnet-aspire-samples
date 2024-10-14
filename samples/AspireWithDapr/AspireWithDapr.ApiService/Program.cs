@@ -66,10 +66,27 @@ app.MapGet("/dapr/subscribe", () =>
 // Dapr subscription in /dapr/subscribe sets up this route
 app.MapPost("/orders", (DaprData<Order> requestData) =>
 {
-    Console.WriteLine("Subscriber received Order Id: " + requestData.Data.OrderId);
-    app.Logger.LogInformation($"Subscriber received Order Id: {requestData.Data.OrderId}");
+    int orderId = requestData.Data.OrderId;
+    Console.WriteLine("Subscriber received Order Id: " + orderId);
+    app.Logger.LogInformation($"Subscriber received Order Id: {orderId}");
     var activity = Activity.Current;
-    activity?.SetTag("orderId", requestData.Data.OrderId);
+    activity?.SetTag("orderId", orderId);
+
+    if (orderId % 10 == 0)
+    {
+        // Simulate an error for every 10th order
+        activity?.SetStatus(ActivityStatusCode.Error, "Something bad happened!");
+        throw new Exception("Simulated error for order id: " + orderId);
+    }
+
+    if (20 <= orderId && orderId <= 40)
+    {
+        // Simulate a delay for order IDs 20-40
+        Random random = new Random();
+        int randomDelay = random.Next(500, 1900); // Generates a random number between 1 and 100
+        Thread.Sleep(randomDelay);
+    }
+
     return Results.Ok(requestData.Data);
 });
 
