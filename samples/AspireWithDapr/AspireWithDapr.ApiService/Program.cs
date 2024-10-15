@@ -126,7 +126,6 @@ async Task SendToDeadLetterTopic(Order order, string errorReason)
 
     // Publish an event/message using Dapr PubSub via HTTP Post
     var response = httpClient.PostAsync($"{baseURL}/v1.0/publish/{PUBSUBNAME}/{deadLetterTopic}", content);
-
 }
 
 app.MapPost("/failedOrders", async (DaprData<Order> requestData) =>
