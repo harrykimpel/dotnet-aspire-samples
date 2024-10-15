@@ -65,7 +65,7 @@ app.MapGet("/weatherforecast", () =>
 
 // Register Dapr pub/sub subscriptions programmatically
 //string baseURL = (Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost") + ":" + (Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500"); //reconfigure cpde to make requests to Dapr sidecar
-const string PUBSUBNAME = "orderpubsub";
+/*const string PUBSUBNAME = "orderpubsub";
 const string TOPIC = "orders";
 const string TOPIC_FAILED = "poisonOrders";
 const string ROUTE_FAILED = "failedOrders";
@@ -79,10 +79,10 @@ app.MapGet("/dapr/subscribe", () =>
     Console.WriteLine($"Dapr pub/sub is subscribed to: {sub2}");
 
     return Results.Json(new DaprSubscription[] { sub1, sub2 });
-});
+});*/
 
 // Dapr subscription in /dapr/subscribe sets up this route when configuring it programmatically
-app.MapPost("/orders", async (DaprData<Order> requestData) =>
+app.MapPost("/orders", (DaprData<Order> requestData) =>
 {
     int orderId = requestData.Data.OrderId;
     Console.WriteLine($"Subscriber received Order Id: {orderId}");
@@ -96,7 +96,7 @@ app.MapPost("/orders", async (DaprData<Order> requestData) =>
         app.Logger.LogInformation($"Simulated error for order id: {orderId}");
         activity?.SetStatus(ActivityStatusCode.Error, "Something bad happened!");
         // If all retries fail, publish the message to the dead letter topic
-        await SendToDeadLetterTopic(requestData.Data, $"Simulated error for order id: {orderId}");
+        //await SendToDeadLetterTopic(requestData.Data, $"Simulated error for order id: {orderId}");
         throw new Exception($"Simulated error for order id: {orderId}");
     }
 
@@ -111,7 +111,7 @@ app.MapPost("/orders", async (DaprData<Order> requestData) =>
     return Results.Ok(requestData.Data);
 });
 
-async Task SendToDeadLetterTopic(Order order, string errorReason)
+/*async Task SendToDeadLetterTopic(Order order, string errorReason)
 {
     string baseURL = (Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost") + ":" + (Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500"); //reconfigure cpde to make requests to Dapr sidecar
     string PUBSUBNAME = "orderpubsub";
@@ -126,8 +126,7 @@ async Task SendToDeadLetterTopic(Order order, string errorReason)
 
     // Publish an event/message using Dapr PubSub via HTTP Post
     var response = httpClient.PostAsync($"{baseURL}/v1.0/publish/{PUBSUBNAME}/{deadLetterTopic}", content);
-
-}
+}*/
 
 app.MapPost("/failedOrders", async (DaprData<Order> requestData) =>
 {
