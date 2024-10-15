@@ -1,9 +1,9 @@
 ---
 languages:
-- csharp
+  - csharp
 products:
-- dotnet
-- dotnet-aspire
+  - dotnet
+  - dotnet-aspire
 page_type: sample
 name: ".NET Aspire dapr sample app"
 urlFragment: "aspire-dapr"
@@ -30,22 +30,47 @@ To download and run the sample, follow these steps:
 
 1. Clone the `dotnet/aspire-samples` repository.
 2. In Visual Studio (2022 or later):
-    1. On the menu bar, choose **File** > **Open** > **Project/Solution**.
-    2. Navigate to the folder that holds the sample code, and open the solution (.sln) file.
-    3. Right click the _AspireWithDapr.AppHost_ project in the solution explore and choose it as the startup project.
-    4. Choose the <kbd>F5</kbd> key to run with debugging, or <kbd>Ctrl</kbd>+<kbd>F5</kbd> keys to run the project without debugging.
+   1. On the menu bar, choose **File** > **Open** > **Project/Solution**.
+   2. Navigate to the folder that holds the sample code, and open the solution (.sln) file.
+   3. Right click the _AspireWithDapr.AppHost_ project in the solution explore and choose it as the startup project.
+   4. Choose the <kbd>F5</kbd> key to run with debugging, or <kbd>Ctrl</kbd>+<kbd>F5</kbd> keys to run the project without debugging.
 3. From the command line:
    1. Navigate to the folder that holds the sample code.
    2. At the command line, type [`dotnet run`](https://docs.microsoft.com/dotnet/core/tools/dotnet-run).
 
-To run the game, run the .NET Aspire app by executing the following at the command prompt (opened to the base directory of the sample):
+## Run the sample app with Dapr CLI
 
-``` bash
+To run the app with New Relic as your observability backend, configure your environment variables and run the Dapr CLI by executing the following at the command prompt (opened to the base directory of the sample):
+
+```bash
+export NEW_RELIC_LICENSE_KEY=MY_NEW_RELIC_LICENSE_KEY
+export OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.nr-data.net:4317
+export OTEL_EXPORTER_OTLP_HEADERS="api-key={$NEW_RELIC_LICENSE_KEY}"
+
+export NEW_RELIC_ACCOUNT_ID=MY_NEW_RELIC_ACCOUNT_ID
+export NEW_RELIC_INSIGHTS_INSERT_KEY=MY_NEW_RELIC_INSIGHTS_INSERT_KEY
+
+dapr run -f .
+```
+
+## Run the sample app with leveraging .NET Aspire
+
+To run the app, run the .NET Aspire app by executing the following at the command prompt (opened to the base directory of the sample):
+
+```bash
+export NEW_RELIC_LICENSE_KEY=MY_NEW_RELIC_LICENSE_KEY
+export OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.nr-data.net:4317
+export OTEL_EXPORTER_OTLP_HEADERS="api-key={$NEW_RELIC_LICENSE_KEY}"
+
+export NEW_RELIC_ACCOUNT_ID=MY_NEW_RELIC_ACCOUNT_ID
+export NEW_RELIC_INSIGHTS_INSERT_KEY=MY_NEW_RELIC_INSIGHTS_INSERT_KEY
+
 dotnet run --project AspireWithDapr.AppHost
 ```
 
 1. On the **Resources** page, click on one of the endpoints for the listed project. This launches the simple .NET app.
-1. In the .NET app:
-    1. Visit the **Weather**.
+1. In the .NET web app:
+   1. Visit the **Weather**.
+   1. Visit the **Orders**.
 
 For more information about using dapr, see the [Dapr documentation](https://docs.dapr.io/developing-applications/sdks/dotnet/).
