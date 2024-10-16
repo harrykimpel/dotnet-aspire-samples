@@ -26,6 +26,8 @@ app.MapGet("/weatherforecast", () =>
     try
     {
         app.Logger.LogInformation("Receiving request for weather forecast.");
+
+        // Generate random weather forecast data for the next 5 days
         int maxRange = 5;
         var forecast = Enumerable.Range(1, maxRange).Select(index =>
             new WeatherForecast
@@ -36,9 +38,11 @@ app.MapGet("/weatherforecast", () =>
             ))
             .ToArray();
 
+        // Add the forecast window as a tag to the current activity
         var activity = Activity.Current;
         activity?.SetTag("amountWeatherForecasts", forecast.Length);
 
+        // Calculate the average temperature for the forecast window
         int totalTempC = 0;
         int totalTempF = 0;
         foreach (WeatherForecast fc in forecast)
@@ -48,6 +52,8 @@ app.MapGet("/weatherforecast", () =>
         }
         float avgTempC = (float)totalTempC / (float)maxRange;
         float avgTempF = (float)totalTempF / (float)maxRange;
+
+        // Add the average temperature as a tag to the current activity and log it
         activity?.SetTag("avgTemperatureC", avgTempC);
         activity?.SetTag("avgTemperatureF", avgTempF);
         app.Logger.LogInformation($"The average temperature in the next {maxRange} days is {avgTempC} C or {avgTempF} F.");
