@@ -22,13 +22,19 @@ else
 
 @code {
     private bool? orderSubmittResult;
+    private int randomCustomerId = -1;
     private int randomOrderId = -1;
 
     protected override async Task OnInitializedAsync()
     {
-        Random random = new Random();
-        randomOrderId = random.Next(1, 101); // Generates a random number between 1 and 100
+        Random randomCustomer = new Random();
+        // Generates a random number between 1 and 10
+        randomCustomerId = randomCustomer.Next(1, 11);
 
-        orderSubmittResult = await WeatherApi.SubmitOrderAsync(randomOrderId);
+        Random randomOrder = new Random();
+        // Generates a random number between 1 and 100
+        randomOrderId = randomOrder.Next(1, 101);
+
+        orderSubmittResult = await WeatherApi.SubmitOrderAsync(randomCustomerId, randomOrderId);
     }
 }

@@ -18,7 +18,7 @@ public class WeatherApiClient(DaprClient daprClient)
         return await daprClient.InvokeMethodAsync<WeatherForecast[]>(HttpMethod.Get, "api", "weatherforecast");
     }
 
-    public async Task<bool> SubmitOrderAsync(int randomOrderId)
+    public async Task<bool> SubmitOrderAsync(int randomCustomerId, int randomOrderId)
     {
         Console.WriteLine("Submitting order ...");
 
@@ -27,7 +27,7 @@ public class WeatherApiClient(DaprClient daprClient)
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-        var order = new Order(randomOrderId);
+        var order = new Order(randomCustomerId, randomOrderId);
         var orderJson = JsonSerializer.Serialize<Order>(order);
         var content = new StringContent(orderJson, Encoding.UTF8, "application/json");
 
@@ -43,4 +43,4 @@ public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
 
-public record Order([property: JsonPropertyName("orderId")] int OrderId);
+public record Order([property: JsonPropertyName("customerId")] int CustomerId, [property: JsonPropertyName("orderId")] int OrderId);
