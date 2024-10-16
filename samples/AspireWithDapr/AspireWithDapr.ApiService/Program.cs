@@ -84,10 +84,12 @@ app.MapGet("/dapr/subscribe", () =>
 // Dapr subscription in /dapr/subscribe sets up this route when configuring it programmatically
 app.MapPost("/orders", (DaprData<Order> requestData) =>
 {
+    int customerId = requestData.Data.CustomerId;
     int orderId = requestData.Data.OrderId;
     Console.WriteLine($"Subscriber received Order Id: {orderId}");
     app.Logger.LogInformation($"Subscriber received Order Id: {orderId}");
     var activity = Activity.Current;
+    activity?.SetTag("enduser.id", customerId);
     activity?.SetTag("orderId", orderId);
 
     if (orderId % 10 == 0)
@@ -132,14 +134,16 @@ app.MapPost("/failedOrders", async (DaprData<Order> requestData) =>
 {
     try
     {
+        int customerId = requestData.Data.CustomerId;
         int orderId = requestData.Data.OrderId;
         Console.WriteLine($"Subscriber received failed Order Id: {orderId}");
         app.Logger.LogInformation($"Subscriber received failed Order Id: {orderId}");
         var activity = Activity.Current;
+        activity?.SetTag("enduser.id", customerId);
         activity?.SetTag("orderId", orderId);
 
         // send to New Relic Insights event
-        FailedOrder failedOrder = new FailedOrder(eventType: "FailedOrder", OrderId: orderId);
+        FailedOrder failedOrder = new FailedOrder(eventType: "FailedOrder", CustomerId: customerId, OrderId: orderId);
         HttpClient httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         var NEW_RELIC_ACCOUNT_ID = Environment.GetEnvironmentVariable("NEW_RELIC_ACCOUNT_ID");
@@ -181,8 +185,8 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 }
 
 public record DaprData<T>([property: JsonPropertyName("data")] T Data);
-public record Order([property: JsonPropertyName("orderId")] int OrderId);
-public record FailedOrder([property: JsonPropertyName("eventType")] string eventType, [property: JsonPropertyName("orderId")] int OrderId);
+public record Order([property: JsonPropertyName("customerId")] int CustomerId, [property: JsonPropertyName("orderId")] int OrderId);
+public record FailedOrder([property: JsonPropertyName("eventType")] string eventType, [property: JsonPropertyName("customerId")] int CustomerId, [property: JsonPropertyName("orderId")] int OrderId);
 public record DaprSubscription(
   [property: JsonPropertyName("pubsubname")] string PubsubName,
   [property: JsonPropertyName("topic")] string Topic,
