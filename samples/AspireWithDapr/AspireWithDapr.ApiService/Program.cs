@@ -124,7 +124,7 @@ async Task SendToDeadLetterTopic(Order order, string errorReason)
     string baseURL = (Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost") + ":" + (Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500"); //reconfigure cpde to make requests to Dapr sidecar
     string PUBSUBNAME = "orderpubsub";
     var deadLetterTopic = "poisonOrders"; // Define your Kafka dead letter topic
-    Console.WriteLine($"Message sent to dead letter topic: {deadLetterTopic}");
+    app.Logger.LogInformation($"Message sent to dead letter topic: {deadLetterTopic}");
 
     var httpClient = new HttpClient();
     httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
@@ -133,7 +133,7 @@ async Task SendToDeadLetterTopic(Order order, string errorReason)
     var content = new StringContent(orderJson, Encoding.UTF8, "application/json");
 
     // Publish an event/message using Dapr PubSub via HTTP Post
-    var response = httpClient.PostAsync($"{baseURL}/v1.0/publish/{PUBSUBNAME}/{deadLetterTopic}", content);
+    var response = await httpClient.PostAsync($"{baseURL}/v1.0/publish/{PUBSUBNAME}/{deadLetterTopic}", content);
 }
 
 app.MapPost("/failedOrders", async (DaprData<Order> requestData) =>

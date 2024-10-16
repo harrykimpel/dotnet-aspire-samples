@@ -32,7 +32,7 @@ public class WeatherApiClient(DaprClient daprClient)
         var content = new StringContent(orderJson, Encoding.UTF8, "application/json");
 
         // Publish an event/message using Dapr PubSub via HTTP Post
-        var response = httpClient.PostAsync($"{baseURL}/v1.0/publish/{PUBSUBNAME}/{TOPIC}", content);
+        var response = await httpClient.PostAsync($"{baseURL}/v1.0/publish/{PUBSUBNAME}/{TOPIC}", content);
 
         return true;
     }
